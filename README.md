@@ -10,6 +10,7 @@ Provide an easy way to catch your web system's SLI based on AWS Lamabda function
 # Usage
 ```
 $ sh build_lambda.sh
-
+$ terraform plan
+$ terraform apply
 ```
 
