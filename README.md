@@ -1,8 +1,19 @@
 # sli-handler  
-Provide an easy way to catch your web system's SLI based on AWS Lamabda functions.  
+Provide an easy way to catch your web system's SLI(Service Level Indicators) based on AWS Lamabda functions.  
   
 ![image](./image.png)
-Certainly, functions are ready to be deployed by using [terraform](https://www.terraform.io/).  
+
+- Data collection  
+  - Mackerel can catching data from Loadbalancer
+  - Newrelic can catching data from web servers(or containers)
+- SLI(Service Level Indicators) visualization
+  - Count SLI by Lambda functions
+  - Output SLI data to Mackerel service metrics
+
+# Deployment
+You can copy & paste lambda functions file to AWS account directly.  
+Or, certainly, functions are ready to be deployed by using [terraform](https://www.terraform.io/).  
+__See [Usage](https://github.com/kuritan/sli-handler#usage) below for more details.__
 
 # Prerequisite  
 - AWS account  
