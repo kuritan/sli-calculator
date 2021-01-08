@@ -26,21 +26,21 @@ def lambda_handler(event, context):
     for i in range(len(get_detail_req['facets'])):
         detail_host_metrics = ""
         details_name_raw = get_detail_req['facets'][i]["name"]
-        # /を-にリプレース（mackerel都合上）
+        # replace / to - (for mackerel specification)
         details_name = details_name_raw.replace("/", "-")
         detail_host_metrics = "custom.sli.response.latency.query.details.%s" % (details_name)
-        # millisecondにする
+        # convert to millisecond
         details_result_raw = list(get_detail_req['facets'][i]["results"][0]["percentiles"].values())[0] * 1000
-        # 小数点以下2桁まで、第3位を四捨五入
+        # rounded up at the third decimal point
         details_result = f'{details_result_raw:.2f}'
         monitor.addMackerelServiceMetric(service_name_mackerel, detail_host_metrics, details_result)
 
     get_req = monitor.getNewRelicInsightsQuery(newrelic_account, result_query)
     percentiles = get_req['results'][0]['percentiles']
     for percentile, target_host_metrics in zip(percentiles.values(), target_host_metrics_list):
-        # millisecondにする
+        # convert to millisecond
         payload_value_raw = percentile * 1000
-        # 小数点以下2桁まで、第3位を四捨五入
+        # rounded up at the third decimal point
         payload_value = f'{payload_value_raw:.2f}'
         print("post playload: " + payload_value)
         monitor.addMackerelServiceMetric(
