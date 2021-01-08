@@ -50,8 +50,8 @@ def lambda_handler(event, context):
             res_metrics_value = [0]
             status_path = metrics_name.replace('STATUS', status_code)
             from_unix_time = check_period_from
-            # mackerelの仕様で、72239秒を超えた期間をリクエストすると、データが丸めに返される
-            # 回避策として、72239秒分のリクエストだけを送る
+            # (mackerel specification)if request a period over 72239s, mackerel will response a rounding value
+            # so, request period just 72239s per times
             while from_unix_time < basedate_unix_time:
                 to_unix_time = from_unix_time + mackerel_span_period
 
@@ -62,20 +62,21 @@ def lambda_handler(event, context):
 
                 for custom_body in custom_body_json:
                     count = int(custom_body['value'])
-                    # 値が最新値より髙いであれば、絶対値を取ってからリストに入れる
+                    # if value > current value, take the absolute value
                     if count > res_metrics_value[-1]:
                         count_absolute = count - res_metrics_value[-1]
                         res_metrics_value.append(count_absolute)
-                    # 値が最新値より低いであれば、ilb側リセットが発生とみなされ、値そのままリストに入れる
+                    # if value < current value, load balancer may had a data reset
+                    # so just take the value
                     elif count < res_metrics_value[-1]:
                         res_metrics_value.append(count)
-                    # 値が最新値と一致であれば、変更なしとみなされる
+                    # if value = current value, means nothing happend
                     else:
                         res_metrics_value.append(0)
 
                 from_unix_time = to_unix_time
 
-            # status codeとmetrics期間中合計値とマッピングする辞書を作成
+            # mapping status code to metrics data
             dict_payload[status_code] = sum(res_metrics_value)
             dict_payload_full.update(dict_payload)
             
@@ -85,7 +86,7 @@ def lambda_handler(event, context):
             else:
                 payload_value_raw = 100 * (
                     1 - int(list(dict_payload_full.values())[-1]) / sum(dict_payload_full.values()))
-                # 小数点以下2桁まで、第3位を四捨五入
+                # rounded up at the third decimal point
                 payload_value = f'{payload_value_raw:.2f}'
                 print("post playload: " + payload_value)
                 monitor.addMackerelServiceMetric(
