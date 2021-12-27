@@ -1,7 +1,7 @@
 # sli-handler  
 Provide an easy way to catch your web system's SLI(Service Level Indicators) based on AWS Lamabda functions.  
   
-![image](./image.png)
+![image](./img/image.png)
 
 - Data collection  
   - Mackerel can catching data from Loadbalancer
@@ -9,6 +9,11 @@ Provide an easy way to catch your web system's SLI(Service Level Indicators) bas
 - SLI(Service Level Indicators) visualization
   - Count SLI by Lambda functions
   - Output SLI data to Mackerel service metrics
+
+## Metrics Sample
+You may get several metrics like them below.  
+![statusCode](./img/statusCode.jpg)
+![responseLatency](./img/responseLatency.jpg)
 
 # Deployment
 You can copy & paste lambda functions file to AWS account directly.  
